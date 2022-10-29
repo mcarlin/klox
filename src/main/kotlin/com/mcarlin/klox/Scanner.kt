@@ -36,10 +36,13 @@ class Scanner(
             '>' -> addToken(if (match('=')) TokenType.GREATER_EQUAL else TokenType.GREATER)
             '/' -> {
                 if (match('/')) {
-                    while (peek() != '\n' && !isAtEnd()) {
-                        advance()
-                    }
-                } else {
+                   handleLineComment()
+                }
+                else if (match('*')) {
+                    handleBlockComment()
+
+                }
+                else {
                     addToken(TokenType.SLASH)
                 }
             }
@@ -65,6 +68,30 @@ class Scanner(
                     error(line, "Unexpected character.")
                 }
             }
+        }
+    }
+
+    private fun handleBlockComment() {
+        var count = 1
+        while (count != 0) {
+            val current = peek()
+            val next = peekNext()
+            if (current == '/' && next == '*') {
+                count++
+                advance() // make sure we advance twice to cover current and next
+            } else if (current == '*' && next == '/') {
+                count--
+                advance() // make sure we advance twice to cover current and next
+            } else if (current == '\n') {
+                line++
+            }
+            advance()
+        }
+    }
+
+    private fun handleLineComment() {
+        while (peek() != '\n' && !isAtEnd()) {
+            advance()
         }
     }
 
