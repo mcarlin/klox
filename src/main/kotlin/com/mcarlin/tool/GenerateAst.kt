@@ -12,7 +12,7 @@ fun main(args: Array<String>) {
     defineAst(outputDir, "Expr", listOf(
         "Binary : Expr left, Token operator, Expr right",
         "Grouping: Expr expression",
-        "Literal: Any value",
+        "Literal: Any? value",
         "Unary : Token operator, Expr right",
     ))
 }
@@ -25,9 +25,10 @@ fun defineAst(outputDir: String, baseName: String, types: List<String>) {
         writer.println("package com.mcarlin.klox")
         writer.println("")
         writer.println("sealed interface Expr {")
-        writer.println("  fun <R> accept(visitor: Visitor<R>)")
-        writer.println("}")
+        writer.println("  fun <R> accept(visitor: Visitor<R>): R")
+        writer.println("")
         defineVisitor(writer, baseName, types)
+        writer.println("}")
 
         types.forEach {
             val className = it.split(":")[0].trim()
@@ -55,8 +56,8 @@ fun defineType(writer: PrintWriter, baseName: String, className: String, fields:
         writer.println("  val $name: $ty,")
     }
     writer.println("): $baseName {")
-    writer.println("  override fun <R> accept(visitor: Visitor<R>) {")
-    writer.println("    visitor.visit${className}Expr(this)")
+    writer.println("  override fun <R> accept(visitor: Expr.Visitor<R>): R {")
+    writer.println("    return visitor.visit${className}Expr(this)")
     writer.println("  }")
     writer.println("}")
 }
