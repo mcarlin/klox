@@ -7,7 +7,7 @@ class AstPrinter: Expr.Visitor<String> {
     }
 
     override fun visitBinaryExpr(binary: Binary): String {
-        return parenthesize(binary.operator.lexeme, binary.left, binary.right);
+        return parenthesize(binary.operator.lexeme, binary.left, binary.right)
     }
 
     override fun visitGroupingExpr(grouping: Grouping): String {

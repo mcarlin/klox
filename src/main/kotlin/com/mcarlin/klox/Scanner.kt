@@ -98,7 +98,7 @@ class Scanner(
     private fun identifier() {
         while (isAlphaNumeric(peek())) {
             advance()
-        }
+    }
 
         val text = source.substring(start until current)
         val type = Companion.keywords.getOrElse(text) { TokenType.IDENTIFIER }
