@@ -40,7 +40,6 @@ class Scanner(
                 }
                 else if (match('*')) {
                     handleBlockComment()
-
                 }
                 else {
                     addToken(TokenType.SLASH)
@@ -85,7 +84,12 @@ class Scanner(
             } else if (current == '\n') {
                 line++
             }
-            advance()
+            if (isAtEnd()) {
+                error(line, "Block comment not closed.")
+                break
+            } else{
+                advance()
+            }
         }
     }
 
@@ -170,7 +174,7 @@ class Scanner(
 
     private fun match(expected: Char): Boolean {
         if (isAtEnd()) return false
-        if (source[current] != expected) advance()
+        if (source[current] != expected) return false
 
         current++
         return true
