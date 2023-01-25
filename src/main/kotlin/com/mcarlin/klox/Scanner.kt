@@ -163,7 +163,7 @@ class Scanner(
 
         advance() // closing `"`
 
-        val value = source.substring(start + 1 until current)
+        val value = source.substring(start + 1 until current - 1)
         addToken(TokenType.STRING, value)
     }
 
