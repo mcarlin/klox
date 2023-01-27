@@ -38,6 +38,9 @@ class Interpreter: Expr.Visitor<Any?> {
             }
             TokenType.SLASH -> {
                 checkNumberOperand(binary.operator, left, right)
+                if (right == 0) {
+                    throw RuntimeError(binary.operator, "Cannot divide by 0")
+                }
                 (left as Double) / (right  as Double)
             }
             TokenType.STAR -> {
