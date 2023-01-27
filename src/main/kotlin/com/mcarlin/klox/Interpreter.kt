@@ -49,7 +49,13 @@ class Interpreter: Expr.Visitor<Any?> {
                     left + right
                 } else if (left is String && right is String) {
                     left + right
-                } else {
+                } else if (left is String && right is Double) {
+                    left + right.toString()
+                }
+                else if (left is Double && right is String) {
+                    left.toString() + right.toString()
+                }
+                else {
                     throw RuntimeError(binary.operator, "Operands must be two numbers or two strings")
                 }
             }
