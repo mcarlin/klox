@@ -41,13 +41,11 @@ fun run(source: String) {
     }
 
     val parser = Parser(tokens)
-    val expression = parser.parse()
+    val statements = parser.parse()
 
     if (hadError) return
 
-    if (expression != null) {
-        interpreter.interpret(expression)
-    }
+    interpreter.interpret(statements)
 }
 
 fun runPrompt() {

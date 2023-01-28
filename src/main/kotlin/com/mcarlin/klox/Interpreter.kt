@@ -1,14 +1,22 @@
 package com.mcarlin.klox
 
-class Interpreter: Expr.Visitor<Any?> {
+import kotlin.math.exp
 
-    fun interpret(expr: Expr) {
+class Interpreter: Expr.Visitor<Any?>, Stmt.Visitor<Unit> {
+
+    fun interpret(statements: List<Stmt>) {
         try {
-            val value = evaluate(expr)
-            println(stringify(value))
+            statements.forEach {
+                execute(it)
+            }
+
         } catch (error: RuntimeError) {
             runtimeError(error)
         }
+    }
+
+    private fun execute(stmt: Stmt) {
+        stmt.accept(this)
     }
 
     private fun stringify(value: Any?): String {
@@ -133,5 +141,14 @@ class Interpreter: Expr.Visitor<Any?> {
 
     private fun evaluate(expr: Expr): Any? {
         return expr.accept(this)
+    }
+
+    override fun visitExpressionStmt(expression: Expression) {
+        evaluate(expression.expression)
+    }
+
+    override fun visitPrintStmt(print: Print) {
+        val value = evaluate(print.expression)
+        println(stringify(value))
     }
 }
