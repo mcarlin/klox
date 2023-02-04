@@ -6,15 +6,19 @@ class AstPrinter: Expr.Visitor<String> {
         return expr.accept(this)
     }
 
-    override fun visitBinaryExpr(binary: Binary): String {
+    override fun visitAssignExpr(assign: Expr.Assign): String {
+        return "${assign.name} = ${assign.value.accept(this)}"
+    }
+
+    override fun visitBinaryExpr(binary: Expr.Binary): String {
         return parenthesize(binary.operator.lexeme, binary.left, binary.right)
     }
 
-    override fun visitGroupingExpr(grouping: Grouping): String {
+    override fun visitGroupingExpr(grouping: Expr.Grouping): String {
         return parenthesize("group", grouping.expression)
     }
 
-    override fun visitLiteralExpr(literal: Literal): String {
+    override fun visitLiteralExpr(literal: Expr.Literal): String {
         return if (literal.value != null) {
            literal.value.toString()
         } else {
@@ -22,11 +26,15 @@ class AstPrinter: Expr.Visitor<String> {
         }
     }
 
-    override fun visitUnaryExpr(unary: Unary): String {
+    override fun visitUnaryExpr(unary: Expr.Unary): String {
         return parenthesize(unary.operator.lexeme, unary.right)
     }
 
-    fun parenthesize(name: String, vararg exprs: Expr): String {
+    override fun visitVariableExpr(variable: Expr.Variable): String {
+        return variable.name.literal.toString()
+    }
+
+    private fun parenthesize(name: String, vararg exprs: Expr): String {
         val builder = StringBuilder()
         builder.append("(").append(name)
         exprs.forEach {
@@ -40,13 +48,13 @@ class AstPrinter: Expr.Visitor<String> {
 }
 
 fun main() {
-    val expression = Binary(
-        Unary(
+    val expression = Expr.Binary(
+        Expr.Unary(
             Token(TokenType.MINUS, "-", null, 1),
-            Literal(123)
+            Expr.Literal(123)
         ),
         Token(TokenType.STAR, "*", null, 1),
-        Grouping(Literal(45.67))
+        Expr.Grouping(Expr.Literal(45.67))
     )
     println(AstPrinter().print(expression))
 }

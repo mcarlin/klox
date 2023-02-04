@@ -10,15 +10,18 @@ fun main(args: Array<String>) {
     }
     val outputDir = args[0]
     defineAst(outputDir, "Expr", listOf(
+        "Assign : Token name, Expr value",
         "Binary : Expr left, Token operator, Expr right",
         "Grouping: Expr expression",
         "Literal: Any? value",
         "Unary : Token operator, Expr right",
-    ));
-
+        "Variable : Token name",
+    ))
     defineAst(outputDir, "Stmt", listOf(
+        "Block : List<Stmt> statements",
         "Expression : Expr expression",
-        "Print : Expr expression"
+        "Print : Expr expression",
+        "Variable : Token name, Expr? initializer"
     ))
 }
 
@@ -33,7 +36,6 @@ fun defineAst(outputDir: String, baseName: String, types: List<String>) {
         writer.println("  fun <R> accept(visitor: Visitor<R>): R")
         writer.println("")
         defineVisitor(writer, baseName, types)
-        writer.println("}")
 
         types.forEach {
             val className = it.split(":")[0].trim()
@@ -41,6 +43,7 @@ fun defineAst(outputDir: String, baseName: String, types: List<String>) {
 
             defineType(writer, baseName, className, fields)
         }
+        writer.println("}")
     }
 }
 

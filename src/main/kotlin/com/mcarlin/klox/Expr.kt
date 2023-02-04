@@ -4,11 +4,21 @@ sealed interface Expr {
   fun <R> accept(visitor: Visitor<R>): R
 
 interface Visitor<R> {
+  fun visitAssignExpr(assign: Assign): R
   fun visitBinaryExpr(binary: Binary): R
   fun visitGroupingExpr(grouping: Grouping): R
   fun visitLiteralExpr(literal: Literal): R
   fun visitUnaryExpr(unary: Unary): R
+  fun visitVariableExpr(variable: Variable): R
 }
+
+class Assign(
+  val name: Token,
+  val value: Expr,
+): Expr {
+  override fun <R> accept(visitor: Expr.Visitor<R>): R {
+    return visitor.visitAssignExpr(this)
+  }
 }
 
 class Binary(
@@ -44,4 +54,13 @@ class Unary(
   override fun <R> accept(visitor: Expr.Visitor<R>): R {
     return visitor.visitUnaryExpr(this)
   }
+}
+
+class Variable(
+  val name: Token,
+): Expr {
+  override fun <R> accept(visitor: Expr.Visitor<R>): R {
+    return visitor.visitVariableExpr(this)
+  }
+}
 }
