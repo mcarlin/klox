@@ -148,6 +148,7 @@ class Interpreter(
 
     override fun visitVariableExpr(variable: Expr.Variable): Any? {
         return environment.get(variable.name)
+            ?: throw RuntimeError(variable.name, "Variable ${variable.name} must be initialized before access")
     }
 
     private fun isTruthy(any: Any?): Boolean {
