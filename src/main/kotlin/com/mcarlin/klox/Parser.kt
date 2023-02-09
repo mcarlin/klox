@@ -53,7 +53,11 @@ class Parser(
         val statements = mutableListOf<Stmt>()
 
         while (!check(TokenType.RIGHT_BRACE) && !isAtEnd()) {
-          statements != declaration()
+            declaration().apply {
+                if (this != null) {
+                   statements += this
+                }
+            }
         }
 
         consume(TokenType.RIGHT_BRACE, "Expect '}' after block.")
