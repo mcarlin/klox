@@ -46,7 +46,7 @@ fun run(source: String) {
 
     if (hadError) return
 
-    // If we're only running a single expression, wrap it in a print so the REPL will print it
+
     if (statements.size == 1) {
         val statement = statements[0]
         if (statement is Stmt.Expression) {

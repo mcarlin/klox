@@ -9,6 +9,7 @@ interface Visitor<R> {
   fun visitExpressionStmt(stmt: Expression): R
   fun visitPrintStmt(stmt: Print): R
   fun visitVariableStmt(stmt: Variable): R
+  fun visitWhileStmt(stmt: While): R
 }
 
 class If(
@@ -51,6 +52,15 @@ class Variable(
 ): Stmt {
   override fun <R> accept(visitor: Stmt.Visitor<R>): R {
     return visitor.visitVariableStmt(this)
+  }
+}
+
+class While(
+  val condition: Expr,
+  val body: Stmt,
+): Stmt {
+  override fun <R> accept(visitor: Stmt.Visitor<R>): R {
+    return visitor.visitWhileStmt(this)
   }
 }
 }

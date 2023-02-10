@@ -44,11 +44,21 @@ class Parser(
     }
 
     private fun statement(): Stmt {
-        if (match(TokenType.IF)) return ifStatement();
+        if (match(TokenType.IF)) return ifStatement()
         if (match(TokenType.PRINT)) return printStatement()
+        if (match(TokenType.WHILE)) return whileStatement()
         if (match(TokenType.LEFT_BRACE)) return Stmt.Block(blockStatement())
 
         return expressionStatement()
+    }
+
+    private fun whileStatement(): Stmt {
+        consume(TokenType.LEFT_PAREN, "Expect '(' after 'while'.");
+        val condition = expression()
+        consume(TokenType.RIGHT_PAREN, "Expect ')' after 'condition'.")
+        val statement = statement()
+
+        return Stmt.While(condition, statement)
     }
 
     private fun ifStatement(): Stmt {

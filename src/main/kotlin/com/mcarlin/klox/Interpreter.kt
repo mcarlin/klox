@@ -10,7 +10,6 @@ class Interpreter(
             statements.forEach {
                 execute(it)
             }
-
         } catch (error: RuntimeError) {
             runtimeError(error)
         }
@@ -216,5 +215,11 @@ class Interpreter(
         }
 
         environment.define(stmt.name.lexeme, value)
+    }
+
+    override fun visitWhileStmt(stmt: Stmt.While) {
+        while (isTruthy(stmt.condition)) {
+            execute(stmt.body)
+        }
     }
 }

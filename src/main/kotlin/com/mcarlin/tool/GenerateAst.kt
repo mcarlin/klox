@@ -23,7 +23,9 @@ fun main(args: Array<String>) {
         "Block : List<Stmt> statements",
         "Expression : Expr expression",
         "Print : Expr expression",
-        "Variable : Token name, Expr? initializer"
+        "Variable : Token name, Expr? initializer",
+        "While : Expr condition, Stmt body",
+
     ))
 }
 
