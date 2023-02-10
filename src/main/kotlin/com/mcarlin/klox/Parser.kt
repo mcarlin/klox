@@ -1,6 +1,7 @@
 package com.mcarlin.klox
 
 import java.lang.RuntimeException
+import kotlin.math.exp
 
 class Parser(
     private val tokens: List<Token>,
@@ -97,7 +98,7 @@ class Parser(
     }
 
     private fun assignment(): Expr {
-        val expr = equality()
+        val expr = or()
 
         if (match(TokenType.EQUAL)) {
             val equals = previous()
@@ -111,6 +112,30 @@ class Parser(
         }
 
         return expr;
+    }
+
+    private fun or(): Expr {
+        var expr = and()
+
+        while (match(TokenType.OR)) {
+            val operator = previous()
+            val right = and()
+            expr = Expr.Logical(expr, operator, right)
+        }
+
+        return expr;
+    }
+
+    private fun and(): Expr {
+        var expr = equality()
+
+        while(match(TokenType.AND)) {
+            val operator = previous()
+            val right = equality()
+            expr = Expr.Logical(expr, operator, right)
+        }
+
+        return expr
     }
 
     private fun equality(): Expr {
