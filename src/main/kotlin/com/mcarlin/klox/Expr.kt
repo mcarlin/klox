@@ -4,12 +4,12 @@ sealed interface Expr {
   fun <R> accept(visitor: Visitor<R>): R
 
 interface Visitor<R> {
-  fun visitAssignExpr(assign: Assign): R
-  fun visitBinaryExpr(binary: Binary): R
-  fun visitGroupingExpr(grouping: Grouping): R
-  fun visitLiteralExpr(literal: Literal): R
-  fun visitUnaryExpr(unary: Unary): R
-  fun visitVariableExpr(variable: Variable): R
+  fun visitAssignExpr(expr: Assign): R
+  fun visitBinaryExpr(expr: Binary): R
+  fun visitGroupingExpr(expr: Grouping): R
+  fun visitLiteralExpr(expr: Literal): R
+  fun visitUnaryExpr(expr: Unary): R
+  fun visitVariableExpr(expr: Variable): R
 }
 
 class Assign(

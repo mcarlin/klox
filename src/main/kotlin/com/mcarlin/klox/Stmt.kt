@@ -4,10 +4,21 @@ sealed interface Stmt {
   fun <R> accept(visitor: Visitor<R>): R
 
 interface Visitor<R> {
-  fun visitBlockStmt(block: Block): R
-  fun visitExpressionStmt(expression: Expression): R
-  fun visitPrintStmt(print: Print): R
-  fun visitVariableStmt(variable: Variable): R
+  fun visitIfStmt(stmt: If): R
+  fun visitBlockStmt(stmt: Block): R
+  fun visitExpressionStmt(stmt: Expression): R
+  fun visitPrintStmt(stmt: Print): R
+  fun visitVariableStmt(stmt: Variable): R
+}
+
+class If(
+  val condition: Expr,
+  val thenBranch: Stmt,
+  val elseBranch: Stmt?,
+): Stmt {
+  override fun <R> accept(visitor: Stmt.Visitor<R>): R {
+    return visitor.visitIfStmt(this)
+  }
 }
 
 class Block(

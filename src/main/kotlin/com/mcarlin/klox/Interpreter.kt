@@ -36,32 +36,32 @@ class Interpreter(
         return value.toString()
     }
 
-    override fun visitAssignExpr(assign: Expr.Assign): Any? {
-        val value = evaluate(assign.value)
-        environment.assign(assign.name, value)
+    override fun visitAssignExpr(expr: Expr.Assign): Any? {
+        val value = evaluate(expr.value)
+        environment.assign(expr.name, value)
         return value
     }
 
-    override fun visitBinaryExpr(binary: Expr.Binary): Any? {
-        val left = evaluate(binary.left)
-        val right = evaluate(binary.right)
+    override fun visitBinaryExpr(expr: Expr.Binary): Any? {
+        val left = evaluate(expr.left)
+        val right = evaluate(expr.right)
 
-        return when (binary.operator.type) {
+        return when (expr.operator.type) {
             TokenType.MINUS -> {
-                checkNumberOperand(binary.operator, left, right)
+                checkNumberOperand(expr.operator, left, right)
                 (left as Double) - (right as Double)
             }
 
             TokenType.SLASH -> {
-                checkNumberOperand(binary.operator, left, right)
+                checkNumberOperand(expr.operator, left, right)
                 if (right == 0) {
-                    throw RuntimeError(binary.operator, "Cannot divide by 0")
+                    throw RuntimeError(expr.operator, "Cannot divide by 0")
                 }
                 (left as Double) / (right as Double)
             }
 
             TokenType.STAR -> {
-                checkNumberOperand(binary.operator, left, right)
+                checkNumberOperand(expr.operator, left, right)
                 (left as Double) * (right as Double)
             }
 
@@ -75,27 +75,27 @@ class Interpreter(
                 } else if (left is Double && right is String) {
                     left.toString() + right.toString()
                 } else {
-                    throw RuntimeError(binary.operator, "Operands must be two numbers or two strings")
+                    throw RuntimeError(expr.operator, "Operands must be two numbers or two strings")
                 }
             }
 
             TokenType.GREATER -> {
-                checkNumberOperand(binary.operator, left, right)
+                checkNumberOperand(expr.operator, left, right)
                 (left as Double) > (right as Double)
             }
 
             TokenType.GREATER_EQUAL -> {
-                checkNumberOperand(binary.operator, left, right)
+                checkNumberOperand(expr.operator, left, right)
                 (left as Double) >= (right as Double)
             }
 
             TokenType.LESS -> {
-                checkNumberOperand(binary.operator, left, right)
+                checkNumberOperand(expr.operator, left, right)
                 (left as Double) < (right as Double)
             }
 
             TokenType.LESS_EQUAL -> {
-                checkNumberOperand(binary.operator, left, right)
+                checkNumberOperand(expr.operator, left, right)
                 (left as Double) <= (right as Double)
             }
 
@@ -124,20 +124,20 @@ class Interpreter(
         }
     }
 
-    override fun visitGroupingExpr(grouping: Expr.Grouping): Any? {
-        return evaluate(grouping.expression)
+    override fun visitGroupingExpr(expr: Expr.Grouping): Any? {
+        return evaluate(expr.expression)
     }
 
-    override fun visitLiteralExpr(literal: Expr.Literal): Any? {
-        return literal.value
+    override fun visitLiteralExpr(expr: Expr.Literal): Any? {
+        return expr.value
     }
 
-    override fun visitUnaryExpr(unary: Expr.Unary): Any? {
-        val right = evaluate(unary.right)
+    override fun visitUnaryExpr(expr: Expr.Unary): Any? {
+        val right = evaluate(expr.right)
 
-        return when (unary.operator.type) {
+        return when (expr.operator.type) {
             TokenType.MINUS -> {
-                checkNumberOperand(unary.operator, right)
+                checkNumberOperand(expr.operator, right)
                 -(right as Double)
             }
 
@@ -146,9 +146,9 @@ class Interpreter(
         }
     }
 
-    override fun visitVariableExpr(variable: Expr.Variable): Any? {
-        return environment.get(variable.name)
-            ?: throw RuntimeError(variable.name, "Variable ${variable.name} must be initialized before access")
+    override fun visitVariableExpr(expr: Expr.Variable): Any? {
+        return environment.get(expr.name)
+            ?: throw RuntimeError(expr.name, "Variable ${expr.name} must be initialized before access")
     }
 
     private fun isTruthy(any: Any?): Boolean {
@@ -163,8 +163,16 @@ class Interpreter(
         return expr.accept(this)
     }
 
-    override fun visitBlockStmt(block: Stmt.Block) {
-        executeBlock(block.statements, Environment(enclosing = environment))
+    override fun visitIfStmt(stmt: Stmt.If) {
+        if (isTruthy(stmt.condition)) {
+            execute(stmt.thenBranch)
+        } else if (stmt.elseBranch != null) {
+            execute(stmt.elseBranch)
+        }
+    }
+
+    override fun visitBlockStmt(stmt: Stmt.Block) {
+        executeBlock(stmt.statements, Environment(enclosing = environment))
     }
 
     private fun executeBlock(statements: List<Stmt>, environment: Environment) {
@@ -180,21 +188,21 @@ class Interpreter(
     }
 
 
-    override fun visitExpressionStmt(expression: Stmt.Expression) {
-        evaluate(expression.expression)
+    override fun visitExpressionStmt(stmt: Stmt.Expression) {
+        evaluate(stmt.expression)
     }
 
-    override fun visitPrintStmt(print: Stmt.Print) {
-        val value = evaluate(print.expression)
+    override fun visitPrintStmt(stmt: Stmt.Print) {
+        val value = evaluate(stmt.expression)
         println(stringify(value))
     }
 
-    override fun visitVariableStmt(variable: Stmt.Variable) {
+    override fun visitVariableStmt(stmt: Stmt.Variable) {
         var value: Any? = null
-        if (variable.initializer != null) {
-            value = evaluate(variable.initializer)
+        if (stmt.initializer != null) {
+            value = evaluate(stmt.initializer)
         }
 
-        environment.define(variable.name.lexeme, value)
+        environment.define(stmt.name.lexeme, value)
     }
 }

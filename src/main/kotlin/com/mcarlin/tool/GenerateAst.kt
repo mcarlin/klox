@@ -18,6 +18,7 @@ fun main(args: Array<String>) {
         "Variable : Token name",
     ))
     defineAst(outputDir, "Stmt", listOf(
+        "If: Expr condition, Stmt thenBranch, Stmt? elseBranch",
         "Block : List<Stmt> statements",
         "Expression : Expr expression",
         "Print : Expr expression",
@@ -51,7 +52,7 @@ fun defineVisitor(writer: PrintWriter, baseName: String, types: List<String>) {
     writer.println("interface Visitor<R> {")
     types.forEach {
         val className = it.split(":")[0].trim()
-        writer.println("  fun visit${className}$baseName(${className.lowercase()}: $className): R")
+        writer.println("  fun visit${className}$baseName(${baseName.lowercase()}: $className): R")
     }
     writer.println("}")
 }
